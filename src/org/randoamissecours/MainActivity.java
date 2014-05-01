@@ -2,18 +2,19 @@ package org.randoamissecours;
 
 import java.util.ArrayList;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
+	public final static String OUTING_NAME = "org.randoamissecours.outing.name";
+	public final static String OUTING_DESCRIPTION = "org.randoamissecours.outing.description";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +38,10 @@ public class MainActivity extends ActionBarActivity {
         	@Override
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		Outing outing = (Outing)adapter.getItem(position);
-        		Toast.makeText(getApplicationContext(),
-        				"Click outing named: " + outing.name, Toast.LENGTH_LONG).show();
+        		Intent intent = new Intent(MainActivity.this, OutingActivity.class);
+        		intent.putExtra(OUTING_NAME, outing.name);
+        		intent.putExtra(OUTING_DESCRIPTION, outing.description);
+        		startActivity(intent);
         		}
         	});
     }
