@@ -1,6 +1,18 @@
 package org.randoamissecours;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -88,13 +100,68 @@ public class MainActivity extends ActionBarActivity {
     		System.out.println("Launching the task");
     		ArrayList<Outing> outings = new ArrayList<Outing>();
     		// TODO: sync with the server
-    		outings.add(new Outing("TODO"));
+    		JSONObject json = downloadJSON("http://10.0.2.2:8000/api/1.0/outing/");
+    		
+    		if (json == null) {
+    			// TODO: alert the user of the error
+    			return outings;
+    		}
+
+    		// Parse the array of outings
+    		try {
+    			JSONArray jArray = json.getJSONArray("objects");
+    			for (int i = 0; i < jArray.length(); i++) {
+    				JSONObject obj = jArray.getJSONObject(i);
+    				outings.add(new Outing(obj));
+    			}
+    		} catch (JSONException e) {
+    			// TODO: alert the user
+    		}
     		return outings;
     	}
     	protected void onPostExecute(ArrayList<Outing> outings) {
     		System.out.println("Task finished");
     		adapter.clear();
+    		if (outings != null)
     		adapter.addAll(outings);
     	}
+    }
+    
+    private JSONObject downloadJSON(String Url) {
+    	DefaultHttpClient client = new DefaultHttpClient(new BasicHttpParams());
+    	HttpGet httpget = new HttpGet(Url);
+    	httpget.setHeader("Content-type", "application/json");
+    	
+    	InputStream is = null;
+    	String result = null;
+    	
+    	try {
+    		HttpResponse response = client.execute(httpget);
+    		HttpEntity entity = response.getEntity();
+    		
+    		is = entity.getContent();
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
+    		StringBuilder sb = new StringBuilder();
+    		
+    		String line = null;
+    		while ((line = reader.readLine()) != null) {
+    			sb.append(line + "\n");
+    		}
+    		result = sb.toString();
+    	} catch (Exception e) {
+    		result = null;
+    	} finally {
+    		try {
+    			if (is != null) {
+    				is.close();
+    			}
+    			if (result != null) {
+    				return new JSONObject(result);
+    			}
+    		} catch (Exception e) {
+    			// nothing to do
+    		}
+    	}
+    	return null;
     }
 }
