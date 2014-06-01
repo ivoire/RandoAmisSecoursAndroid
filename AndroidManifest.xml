@@ -29,6 +29,11 @@
             android:name="org.randoamissecours.OutingActivity"
             android:label="@string/title_activity_outing" >
         </activity>
+        <activity
+            android:name="org.randoamissecours.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
     </application>
 
 </manifest>
