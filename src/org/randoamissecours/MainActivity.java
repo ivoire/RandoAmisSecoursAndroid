@@ -2,6 +2,7 @@ package org.randoamissecours;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.randoamissecours.utils.HTTPHelper;
 
 
@@ -27,7 +27,13 @@ public class MainActivity extends ActionBarActivity {
 	public final static String OUTING_NAME = "org.randoamissecours.outing.name";
 	public final static String OUTING_DESCRIPTION = "org.randoamissecours.outing.description";
 	
+	public final static String LOGIN_PREFS = "LoginPrefs";
+	public final static String LOGIN_PREFS_USERNAME = "Username";
+	public final static String LOGIN_PREFS_APIKEY = "ApiKey";
+
 	public OutingsAdapter adapter;
+	private String mUsername;
+	private String mApiKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,21 @@ public class MainActivity extends ActionBarActivity {
         		startActivity(intent);
         		}
         	});
+
+        // Check the user credential
+        // If they are missing: launch the login activity
+        SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, 0);
+        mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
+
+        while (mUsername == "") {
+        	// Start the login Activity
+        	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        	startActivity(intent);
+        	mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
+        }
+        
+        // Get the full credentials
+        mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
     }
 
     @Override
