@@ -28,11 +28,13 @@ public class MainActivity extends ActionBarActivity {
 	public final static String OUTING_DESCRIPTION = "org.randoamissecours.outing.description";
 	
 	public final static String LOGIN_PREFS = "LoginPrefs";
-	public final static String LOGIN_PREFS_USERNAME = "Username";
+	public final static String LOGIN_PREFS_USER_ID = "User_id";
+	public final static String LOGIN_PREFS_PROFILE_ID = "Profile_id";
 	public final static String LOGIN_PREFS_APIKEY = "ApiKey";
 
 	public OutingsAdapter adapter;
-	private String mUsername;
+	private Integer mUserId;
+	private Integer mProfileId;
 	private String mApiKey;
 
     @Override
@@ -68,9 +70,9 @@ public class MainActivity extends ActionBarActivity {
         // Check the user credential
         // If they are missing: launch the login activity
         SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, 0);
-        mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
+        mUserId = settings.getInt(LOGIN_PREFS_USER_ID, -1);
 
-        while (mUsername == "") {
+        if (mUserId < 0) {
         	// Start the login Activity
         	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         	startActivity(intent);
@@ -78,6 +80,7 @@ public class MainActivity extends ActionBarActivity {
         }
         
         // Get the full credentials
+        mProfileId = settings.getInt(LOGIN_PREFS_PROFILE_ID, -1);
         mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
     }
 
