@@ -1,13 +1,20 @@
 package org.randoamissecours;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.randoamissecours.utils.HTTPHelper;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -20,12 +27,7 @@ import android.widget.TextView;
  * well.
  */
 public class LoginActivity extends Activity {
-	/**
-	 * A dummy authentication store containing known user names and passwords.
-	 * TODO: remove after connecting to a real authentication system.
-	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"foo@example.com:hello", "bar@example.com:world" };
+	private static final String TAG = "LoginActivity";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
@@ -113,7 +115,7 @@ public class LoginActivity extends Activity {
 			cancel = true;
 		}
 
-		// Check for a valid login address.
+		// Check for a valid username.
 		if (TextUtils.isEmpty(mUsername)) {
 			mUsernameView.setError(getString(R.string.error_field_required));
 			focusView = mUsernameView;
@@ -182,25 +184,41 @@ public class LoginActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
+			// Login on the API
+			JSONObject json = HTTPHelper.downloadJSON("http://10.0.2.2:8000/api/1.0/login/", mUsername, mPassword);
 
-			try {
-				// Simulate network access.
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
+			if (json == null) {
+				Log.d(TAG, "Empty answer");
 				return false;
 			}
 
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mUsername)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
+			Integer UserId;
+			Integer ProfileId;
+			String ApiKey;
+			try {
+				JSONArray objects = json.getJSONArray("objects");
+				// The array should only have one item
+				if (objects.length() != 1) {
+					Log.e(TAG, String.format("Authentication returned %d objects", objects.length()));
+					return false;
 				}
+				JSONObject authObj = objects.getJSONObject(0);
+				UserId = authObj.getInt("user_id");
+				ProfileId = authObj.getInt("profile_id");
+				ApiKey = authObj.getString("key");
+			} catch (JSONException e) {
+				Log.e(TAG, "Invalid JSON object");
+				return false;
 			}
 
-			// TODO: register the new account here.
-			return false;
+			// Save credentials into the preferences
+			SharedPreferences settings = getSharedPreferences(MainActivity.LOGIN_PREFS, 0);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putInt(MainActivity.LOGIN_PREFS_USER_ID, UserId);
+			editor.putInt(MainActivity.LOGIN_PREFS_PROFILE_ID, ProfileId);
+			editor.putString(MainActivity.LOGIN_PREFS_APIKEY, ApiKey);
+			editor.commit();
+			return true;
 		}
 
 		@Override
