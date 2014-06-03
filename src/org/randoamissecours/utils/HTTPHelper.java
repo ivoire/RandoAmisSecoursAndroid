@@ -11,6 +11,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import android.util.Base64;
+
 public class HTTPHelper {
 	public static JSONObject downloadJSON(String Url) {
 		return HTTPHelper.downloadJSON(Url, null, null);
@@ -21,8 +23,12 @@ public class HTTPHelper {
     	request.setHeader("Content-type", "application/json");
     	
     	// If login/password are not null we must add Basic Authentication
-    	// TODO: Basic auth
-    	
+    	if (login != null && password != null) {
+    		String credentials = login + ":" + password;  
+    		String base64EncodedCredentials = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);  
+    		request.addHeader("Authorization", "Basic " + base64EncodedCredentials);
+    	}
+
     	InputStream is = null;
     	String result = null;
     	
