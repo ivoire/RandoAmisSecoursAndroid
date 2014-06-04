@@ -140,8 +140,10 @@ public class MainActivity extends ActionBarActivity {
     		System.out.println("Launching the task");
     		ArrayList<Outing> outings = new ArrayList<Outing>();
     		// TODO: sync with the server
-    		JSONObject json = HTTPHelper.downloadJSON("http://10.0.2.2:8000/api/1.0/outing/");
-    		
+    		String Url = String.format("http://%s/api/1.0/outing/?user__id=%d&api_key=%s&username=%s",
+    								   "10.0.2.2:8000", mUserId, mApiKey, mUsername);
+    		JSONObject json = HTTPHelper.downloadJSON(Url);
+
     		if (json == null) {
     			// TODO: alert the user of the error
     			return outings;
