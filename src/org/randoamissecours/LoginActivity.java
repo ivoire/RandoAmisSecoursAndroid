@@ -227,6 +227,7 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
+				setResult(RESULT_OK);
 				finish();
 			} else {
 				mPasswordView

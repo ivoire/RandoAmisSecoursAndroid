@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,17 +25,21 @@ import org.randoamissecours.utils.HTTPHelper;
 
 
 public class MainActivity extends ActionBarActivity {
+	public final static String TAG = "MainActivity";
 	public final static String OUTING_NAME = "org.randoamissecours.outing.name";
 	public final static String OUTING_DESCRIPTION = "org.randoamissecours.outing.description";
-	
+
+	public final static int LOGIN_RESULT = 1;
 	public final static String LOGIN_PREFS = "LoginPrefs";
 	public final static String LOGIN_PREFS_USER_ID = "User_id";
+	public final static String LOGIN_PREFS_USERNAME = "Username";
 	public final static String LOGIN_PREFS_PROFILE_ID = "Profile_id";
 	public final static String LOGIN_PREFS_APIKEY = "ApiKey";
 
-	public OutingsAdapter adapter;
-	private Integer mUserId;
-	private Integer mProfileId;
+	private OutingsAdapter adapter;
+	private int mUserId;
+	private String mUsername;
+	private int mProfileId;
 	private String mApiKey;
 
     @Override
@@ -68,20 +73,41 @@ public class MainActivity extends ActionBarActivity {
         	});
 
         // Check the user credential
-        // If they are missing: launch the login activity
         SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, 0);
         mUserId = settings.getInt(LOGIN_PREFS_USER_ID, -1);
 
+        // No credentials: launch the login activity
         if (mUserId < 0) {
         	// Start the login Activity
         	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        	startActivity(intent);
-        	mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
+        	// The credentials will be grabbed later
+        	startActivityForResult(intent, LOGIN_RESULT);
         }
         
         // Get the full credentials
+        mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
         mProfileId = settings.getInt(LOGIN_PREFS_PROFILE_ID, -1);
         mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+    	if (requestCode == LOGIN_RESULT) {
+    		if (resultCode == RESULT_OK) {
+    			// Grab the credentials again
+    			SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, 0);
+    	        mUserId = settings.getInt(LOGIN_PREFS_USER_ID, -1);
+    	        mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
+    			mProfileId = settings.getInt(LOGIN_PREFS_PROFILE_ID, -1);
+    	        mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
+    		} else {
+    			// Start the login Activity
+            	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            	// The credentials will be grabbed later
+            	startActivityForResult(intent, LOGIN_RESULT);
+    		}
+    	}
     }
 
     @Override
