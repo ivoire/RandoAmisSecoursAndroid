@@ -47,6 +47,23 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Check the user credential
+        SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, 0);
+        mUserId = settings.getInt(LOGIN_PREFS_USER_ID, -1);
+
+        // No credentials: launch the login activity
+        if (mUserId < 0) {
+        	// Start the login Activity
+        	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        	// The credentials will be grabbed later
+        	startActivityForResult(intent, LOGIN_RESULT);
+        } else {
+        	// Get the full credentials
+            mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
+            mProfileId = settings.getInt(LOGIN_PREFS_PROFILE_ID, -1);
+            mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
+        }
+
         // Create and populate the list of Outings
         ListView listView = (ListView) findViewById(R.id.list);
         ArrayList<Outing> outings = new ArrayList<Outing>();
@@ -54,12 +71,7 @@ public class MainActivity extends ActionBarActivity {
         adapter.setNotifyOnChange(true);
         listView.setAdapter(adapter);
 
-        // TODO: remove this code
-        // Add outings manually for testing
-        Outing outing = new Outing("Dent de Crolles");
-        outings.add(outing);
-        outing = new Outing("Mont Blanc");
-        outings.add(outing);
+        // TODO: populate the list from the cache
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	@Override
@@ -72,22 +84,6 @@ public class MainActivity extends ActionBarActivity {
         		}
         	});
 
-        // Check the user credential
-        SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, 0);
-        mUserId = settings.getInt(LOGIN_PREFS_USER_ID, -1);
-
-        // No credentials: launch the login activity
-        if (mUserId < 0) {
-        	// Start the login Activity
-        	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        	// The credentials will be grabbed later
-        	startActivityForResult(intent, LOGIN_RESULT);
-        }
-        
-        // Get the full credentials
-        mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
-        mProfileId = settings.getInt(LOGIN_PREFS_PROFILE_ID, -1);
-        mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
     }
 
     @Override
