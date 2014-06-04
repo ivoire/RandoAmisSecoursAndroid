@@ -215,6 +215,7 @@ public class LoginActivity extends Activity {
 			SharedPreferences settings = getSharedPreferences(MainActivity.LOGIN_PREFS, 0);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putInt(MainActivity.LOGIN_PREFS_USER_ID, UserId);
+			editor.putString(MainActivity.LOGIN_PREFS_USERNAME, mUsername);
 			editor.putInt(MainActivity.LOGIN_PREFS_PROFILE_ID, ProfileId);
 			editor.putString(MainActivity.LOGIN_PREFS_APIKEY, ApiKey);
 			editor.commit();
