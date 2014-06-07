@@ -186,15 +186,34 @@ public class MainActivity extends ActionBarActivity {
     			return null;
     		}
 
-    		// Parse the array of outings
+    		// Prepare the database for writing the data
+            OutingOpenHelper dbHelper = new OutingOpenHelper(getApplicationContext());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            // Clear the database
+            db.delete(OutingOpenHelper.TABLE_NAME, null, null);
+
+            // Parse the results
     		try {
     			JSONArray jArray = json.getJSONArray("objects");
     			for (int i = 0; i < jArray.length(); i++) {
     				JSONObject obj = jArray.getJSONObject(i);
-    				outings.add(new Outing(obj));
+    				Outing out = new Outing(obj);
+    				outings.add(out);
+
+    				ContentValues values = new ContentValues();
+    				values.put(OutingOpenHelper.COLUMN_ID, out.id);
+    				values.put(OutingOpenHelper.COLUMN_NAME, out.name);
+    				values.put(OutingOpenHelper.COLUMN_DESCRIPTION, out.description);
+    				values.put(OutingOpenHelper.COLUMN_STATUS, out.status);
+    				// TODO: add the dates (beginning, ending, alert)
+    				values.put(OutingOpenHelper.COLUMN_LATITUDE, out.latitude);
+    				values.put(OutingOpenHelper.COLUMN_LONGITUDE, out.longitude);
+    				db.insert(OutingOpenHelper.TABLE_NAME, null, values);
     			}
     		} catch (JSONException e) {
-    			// TODO: alert the user
+    			outings = null;
+    		} finally {
+    			db.close();
     		}
     		return outings;
     	}
