@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 
 public class Outing {
+	public int id;
 	public String name;
 	public String description;
 	public int status;
@@ -18,6 +19,7 @@ public class Outing {
 
 	public Outing(JSONObject object){
 		try {
+			this.id = object.getInt("id");
 			this.name = object.getString("name");
 			this.description = object.getString("description");
 			this.status = object.getInt("status");

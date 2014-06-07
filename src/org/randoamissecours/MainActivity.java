@@ -1,8 +1,11 @@
 package org.randoamissecours;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -71,8 +74,6 @@ public class MainActivity extends ActionBarActivity {
         adapter.setNotifyOnChange(true);
         listView.setAdapter(adapter);
 
-        // TODO: populate the list from the cache
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	@Override
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -84,6 +85,8 @@ public class MainActivity extends ActionBarActivity {
         		}
         	});
 
+        // Load Outings from the database
+        new LoadFromDbTask().execute();
     }
 
     @Override
@@ -133,6 +136,41 @@ public class MainActivity extends ActionBarActivity {
         	}
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class LoadFromDbTask extends AsyncTask<Void, Integer, ArrayList<Outing> > {
+		@Override
+		protected ArrayList<Outing> doInBackground(Void... params) {
+			Log.d(TAG, "Loading from the database: begin");
+    		ArrayList<Outing> outings = new ArrayList<Outing>();
+
+            // Populate the list from the cache
+            OutingOpenHelper dbHelper = new OutingOpenHelper(getApplicationContext());
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String[] projection = {
+            		OutingOpenHelper.COLUMN_ID,
+            		OutingOpenHelper.COLUMN_NAME
+            };
+            Cursor c = db.query(OutingOpenHelper.TABLE_NAME, projection, null, null, null, null, null);
+            while (c.moveToNext()) {
+            	Log.d(TAG, "Adding one item");
+            	Outing outing = new Outing(c.getString(c.getColumnIndexOrThrow(
+            											OutingOpenHelper.COLUMN_NAME)));
+            	outing.id = c.getInt(c.getColumnIndexOrThrow(OutingOpenHelper.COLUMN_ID));
+            	outings.add(outing);
+            	Log.d(TAG, String.format("   %s", outing.name));
+            }
+            db.close();
+            return outings;
+		}
+
+		protected void onPostExecute(ArrayList<Outing> outings) {
+    		Log.d(TAG, "Loading from the database: finished");
+    		adapter.clear();
+    		if (outings != null) {
+    			adapter.addAll(outings);
+    		}
+    	}
     }
 
     private class SyncTask extends AsyncTask<Void, Integer, ArrayList<Outing> > {
