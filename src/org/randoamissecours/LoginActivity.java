@@ -185,7 +185,7 @@ public class LoginActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			// Login on the API
-			JSONObject json = HTTPHelper.downloadJSON("http://10.0.2.2:8000/api/1.0/login/", mUsername, mPassword);
+			JSONObject json = HTTPHelper.downloadJSON("http://randoamissecours.org/api/1.0/login/", mUsername, mPassword);
 
 			if (json == null) {
 				Log.d(TAG, "Empty answer");
