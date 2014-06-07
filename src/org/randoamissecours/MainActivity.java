@@ -175,7 +175,7 @@ public class MainActivity extends ActionBarActivity {
 
     private class SyncTask extends AsyncTask<Void, Integer, ArrayList<Outing> > {
     	protected ArrayList<Outing> doInBackground(Void... dummy) {
-    		System.out.println("Launching the task");
+    		Log.d(TAG, "Sync from the server");
     		ArrayList<Outing> outings = new ArrayList<Outing>();
     		// TODO: sync with the server
     		String Url = String.format("http://%s/api/1.0/outing/?user__id=%d&api_key=%s&username=%s",
@@ -183,8 +183,7 @@ public class MainActivity extends ActionBarActivity {
     		JSONObject json = HTTPHelper.downloadJSON(Url);
 
     		if (json == null) {
-    			// TODO: alert the user of the error
-    			return outings;
+    			return null;
     		}
 
     		// Parse the array of outings
@@ -200,10 +199,13 @@ public class MainActivity extends ActionBarActivity {
     		return outings;
     	}
     	protected void onPostExecute(ArrayList<Outing> outings) {
-    		System.out.println("Task finished");
+    		Log.d(TAG, "Sync from server: finished");
     		adapter.clear();
     		if (outings != null) {
     			adapter.addAll(outings);
+    		} else {
+    			Toast toast = Toast.makeText(getApplicationContext(), "Unable to synchronize", Toast.LENGTH_SHORT);
+    			toast.show();
     		}
     	}
     }
