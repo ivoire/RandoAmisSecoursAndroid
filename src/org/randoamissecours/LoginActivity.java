@@ -192,6 +192,7 @@ public class LoginActivity extends Activity {
 													  mUsername, mPassword);
 
 			if (json == null) {
+				Log.e(TAG, String.format("Unable to connect to '%s'", server));
 				Log.d(TAG, "Empty answer");
 				return false;
 			}
