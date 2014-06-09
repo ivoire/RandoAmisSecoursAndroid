@@ -91,7 +91,9 @@ public class MainActivity extends ActionBarActivity {
         	});
 
         // Load Outings from the database
-        new LoadFromDbTask().execute();
+        if (mUserId >= 0) {
+        	new LoadFromDbTask().execute();
+        }
     }
 
     @Override
