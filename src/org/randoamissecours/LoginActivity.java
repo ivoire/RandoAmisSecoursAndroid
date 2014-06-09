@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -185,7 +186,10 @@ public class LoginActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			// Login on the API
-			JSONObject json = HTTPHelper.downloadJSON("http://randoamissecours.org/api/1.0/login/", mUsername, mPassword);
+    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    		String server = sharedPref.getString("server", "");
+			JSONObject json = HTTPHelper.downloadJSON(String.format("%s/api/1.0/login/", server),
+													  mUsername, mPassword);
 
 			if (json == null) {
 				Log.d(TAG, "Empty answer");

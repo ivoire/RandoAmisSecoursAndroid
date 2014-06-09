@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -180,11 +181,13 @@ public class MainActivity extends ActionBarActivity {
 
     private class SyncTask extends AsyncTask<Void, Integer, ArrayList<Outing> > {
     	protected ArrayList<Outing> doInBackground(Void... dummy) {
-    		Log.d(TAG, "Sync from the server");
     		ArrayList<Outing> outings = new ArrayList<Outing>();
-    		// TODO: sync with the server
-    		String Url = String.format("http://%s/api/1.0/outing/?user__id=%d&api_key=%s&username=%s",
-    								   "randoamissecours.org", mUserId, mApiKey, mUsername);
+    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    		String server = sharedPref.getString("server", "");
+
+    		Log.d(TAG, String.format("Sync from the server: %s", server));
+    		String Url = String.format("%s/api/1.0/outing/?user__id=%d&api_key=%s&username=%s",
+    								   server, mUserId, mApiKey, mUsername);
     		JSONObject json = HTTPHelper.downloadJSON(Url);
 
     		if (json == null) {
