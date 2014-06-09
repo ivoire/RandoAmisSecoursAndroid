@@ -111,10 +111,8 @@ public class MainActivity extends ActionBarActivity {
     	        // Synchronize with the server
     	        new SyncTask().execute();
     		} else {
-    			// Start the login Activity
-            	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            	// The credentials will be grabbed later
-            	startActivityForResult(intent, LOGIN_RESULT);
+    			Toast toast = Toast.makeText(getApplicationContext(), "Unable to login", Toast.LENGTH_SHORT);
+    			toast.show();
     		}
     	}
     }
