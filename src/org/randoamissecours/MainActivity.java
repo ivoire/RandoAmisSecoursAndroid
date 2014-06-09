@@ -134,6 +134,11 @@ public class MainActivity extends ActionBarActivity {
         		toast.show();
         		return false;
         	}
+        } else if (id == R.id.action_settings) {
+        	// Start the settings Activity
+        	Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        	startActivity(intent);
+        	return true;
         }
         return super.onOptionsItemSelected(item);
     }
