@@ -107,6 +107,9 @@ public class MainActivity extends ActionBarActivity {
     	        mUsername = settings.getString(LOGIN_PREFS_USERNAME, "");
     			mProfileId = settings.getInt(LOGIN_PREFS_PROFILE_ID, -1);
     	        mApiKey = settings.getString(LOGIN_PREFS_APIKEY, "");
+
+    	        // Synchronize with the server
+    	        new SyncTask().execute();
     		} else {
     			// Start the login Activity
             	Intent intent = new Intent(MainActivity.this, LoginActivity.class);
