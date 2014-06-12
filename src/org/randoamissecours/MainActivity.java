@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
@@ -181,7 +182,14 @@ public class MainActivity extends ActionBarActivity {
     		Log.d(TAG, "Loading from the database: finished");
     		adapter.clear();
     		if (outings != null) {
-    			adapter.addAll(outings);
+    			// addAll is not available in earlier versions
+    			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+    	            adapter.addAll(outings);
+    	        } else {
+    	            for(Outing outing: outings) {
+    	                adapter.add(outing);
+    	            }
+    	        }
     		}
     	}
     }
