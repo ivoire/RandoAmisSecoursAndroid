@@ -244,7 +244,14 @@ public class MainActivity extends ActionBarActivity {
     		Log.d(TAG, "Sync from server: finished");
     		adapter.clear();
     		if (outings != null) {
-    			adapter.addAll(outings);
+    			// addAll is not available in earlier versions
+    			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+    	            adapter.addAll(outings);
+    	        } else {
+    	            for(Outing outing: outings) {
+    	                adapter.add(outing);
+    	            }
+    	        }
     		} else {
     			Toast toast = Toast.makeText(getApplicationContext(), "Unable to synchronize", Toast.LENGTH_SHORT);
     			toast.show();
