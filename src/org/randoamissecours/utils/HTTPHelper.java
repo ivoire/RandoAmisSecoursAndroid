@@ -1,44 +1,43 @@
 package org.randoamissecours.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.json.JSONObject;
 
 import android.util.Base64;
+import android.util.Log;
 
 public class HTTPHelper {
+	public static final String TAG = "HTTPHelper";
+
 	public static JSONObject downloadJSON(String Url) {
 		return HTTPHelper.downloadJSON(Url, null, null);
 	}
 
 	public static JSONObject downloadJSON(String Url, String login, String password) {
-    	HttpUriRequest request = new HttpGet(Url);
-    	request.setHeader("Content-type", "application/json");
-    	
-    	// If login/password are not null we must add Basic Authentication
-    	if (login != null && password != null) {
-    		String credentials = login + ":" + password;  
-    		String base64EncodedCredentials = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);  
-    		request.addHeader("Authorization", "Basic " + base64EncodedCredentials);
-    	}
+		HttpURLConnection urlConnection = null;
+		InputStream is;
+		String result = null;
+		try {
+			URL url = new URL(Url);
+			urlConnection = (HttpURLConnection) url.openConnection();
+			urlConnection.setRequestProperty("Content-type", "application/json");
 
-    	InputStream is = null;
-    	String result = null;
-    	
-    	try {
-    		DefaultHttpClient client = new DefaultHttpClient();
-    		HttpResponse response = client.execute(request);
-    		HttpEntity entity = response.getEntity();
-    		
-    		is = entity.getContent();
-    		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
+			// If login/password are not null we must add Basic Authentication
+	    	if (login != null && password != null) {
+	    		String credentials = login + ":" + password;
+	    		String base64EncodedCredentials = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+	    		urlConnection.setRequestProperty("Authorization", "Basic " + base64EncodedCredentials);
+	    	}
+
+			is = new BufferedInputStream(urlConnection.getInputStream());
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
     		StringBuilder sb = new StringBuilder();
     		
     		String line = null;
@@ -46,20 +45,21 @@ public class HTTPHelper {
     			sb.append(line + "\n");
     		}
     		result = sb.toString();
-    	} catch (Exception e) {
-    		result = null;
-    	} finally {
-    		try {
-    			if (is != null) {
-    				is.close();
-    			}
-    			if (result != null) {
-    				return new JSONObject(result);
-    			}
-    		} catch (Exception e) {
-    			// nothing to do
-    		}
-    	}
-    	return null;
+		} catch (MalformedURLException e1) {
+			Log.e(TAG, String.format("Malformated url: '%s'", Url));
+		} catch (IOException e) {
+			Log.e(TAG, "I/O exception");
+		} finally {
+			urlConnection.disconnect();
+			if (result != null) {
+				try {
+					return new JSONObject(result);
+				} catch (Exception e) {
+					Log.e(TAG, String.format("Invalid JSON object: '%s'", result));
+					return null;
+				}
+			}
+		}
+		return null;
     }
 }
