@@ -228,7 +228,9 @@ public class MainActivity extends ActionBarActivity {
     				values.put(OutingOpenHelper.COLUMN_NAME, out.name);
     				values.put(OutingOpenHelper.COLUMN_DESCRIPTION, out.description);
     				values.put(OutingOpenHelper.COLUMN_STATUS, out.status);
-    				// TODO: add the dates (beginning, ending, alert)
+    				values.put(OutingOpenHelper.COLUMN_BEGINNING, out.dateFormat(out.beginning));
+    				values.put(OutingOpenHelper.COLUMN_ENDING, out.dateFormat(out.ending));
+    				values.put(OutingOpenHelper.COLUMN_ALERT, out.dateFormat(out.alert));
     				values.put(OutingOpenHelper.COLUMN_LATITUDE, out.latitude);
     				values.put(OutingOpenHelper.COLUMN_LONGITUDE, out.longitude);
     				db.insert(OutingOpenHelper.TABLE_NAME, null, values);
