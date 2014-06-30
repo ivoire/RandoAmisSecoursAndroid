@@ -43,7 +43,7 @@ public class Outing {
 
 	// Parse a String and return the corresponding date
 	// The format is something like '2014-05-29T15:00:12'
-	public static final Date parseDate(String str) {
+	public final Date parseDate(String str) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 

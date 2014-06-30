@@ -31,8 +31,7 @@ import org.randoamissecours.utils.HTTPHelper;
 
 public class MainActivity extends ActionBarActivity {
 	public final static String TAG = "MainActivity";
-	public final static String OUTING_NAME = "org.randoamissecours.outing.name";
-	public final static String OUTING_DESCRIPTION = "org.randoamissecours.outing.description";
+	public final static String OUTING_ID = "org.randoamissecours.outing.id";
 
 	public final static int LOGIN_RESULT = 1;
 	public final static String LOGIN_PREFS = "LoginPrefs";
@@ -85,8 +84,7 @@ public class MainActivity extends ActionBarActivity {
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		Outing outing = (Outing)adapter.getItem(position);
         		Intent intent = new Intent(MainActivity.this, OutingActivity.class);
-        		intent.putExtra(OUTING_NAME, outing.name);
-        		intent.putExtra(OUTING_DESCRIPTION, outing.description);
+        		intent.putExtra(OUTING_ID, outing.id);
         		startActivity(intent);
         		}
         	});

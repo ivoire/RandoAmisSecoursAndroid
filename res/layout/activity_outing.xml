@@ -16,14 +16,71 @@
             android1:id="@+id/name"
             android1:layout_width="wrap_content"
             android1:layout_height="wrap_content"
-            android1:text="TextView" />
+            android1:text=""
+            android1:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android1:id="@+id/description"
-            android1:layout_width="wrap_content"
+            android1:layout_width="match_parent"
             android1:layout_height="wrap_content"
-            android1:text="TextView" />
+            android1:text="" />
 
+        <LinearLayout
+            android1:layout_width="match_parent"
+            android1:layout_height="wrap_content" >
+
+            <TextView
+                android1:id="@+id/textView1"
+                android1:layout_width="wrap_content"
+                android1:layout_height="wrap_content"
+                android1:text="Beginning" />
+
+            <TextView
+                android1:id="@+id/clockBeginning"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:gravity="right"
+                android1:text="" />
+
+        </LinearLayout>
+        
+        <LinearLayout
+            android1:layout_width="match_parent"
+            android1:layout_height="wrap_content" >
+
+            <TextView
+                android1:id="@+id/textView2"
+                android1:layout_width="wrap_content"
+                android1:layout_height="wrap_content"
+                android1:text="Ending" />
+
+            <TextView
+                android1:id="@+id/clockEnding"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:gravity="right"
+                android1:text="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android1:layout_width="match_parent"
+            android1:layout_height="wrap_content" >
+
+            <TextView
+                android1:id="@+id/textView3"
+                android1:layout_width="wrap_content"
+                android1:layout_height="wrap_content"
+                android1:text="Alert" />
+
+            <TextView
+                android1:id="@+id/clockAlert"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:gravity="right"
+                android1:text="" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
