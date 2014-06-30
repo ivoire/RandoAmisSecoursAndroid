@@ -165,7 +165,6 @@ public class MainActivity extends ActionBarActivity {
             };
             Cursor c = db.query(OutingOpenHelper.TABLE_NAME, projection, null, null, null, null, null);
             while (c.moveToNext()) {
-            	Log.d(TAG, "Adding one item");
             	Outing outing = new Outing(c.getString(c.getColumnIndexOrThrow(
             											OutingOpenHelper.COLUMN_NAME)));
             	outing.id = c.getInt(c.getColumnIndexOrThrow(OutingOpenHelper.COLUMN_ID));
