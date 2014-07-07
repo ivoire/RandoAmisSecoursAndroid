@@ -1,5 +1,7 @@
 package org.randoamissecours;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -40,7 +44,11 @@ public class MainActivity extends ActionBarActivity {
 	public final static String LOGIN_PREFS_PROFILE_ID = "Profile_id";
 	public final static String LOGIN_PREFS_APIKEY = "ApiKey";
 
-	private OutingsAdapter adapter;
+	private OutingsAdapter mAdapter;
+	private ArrayList<Outing> mMyOutings;
+	private ArrayList<Outing> mFriendsOutings;
+	private ArrayList<Outing> mOldOutings;
+	
 	private int mUserId;
 	private String mUsername;
 	private int mProfileId;
@@ -50,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         // Load the default values for the global preferences
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
@@ -74,20 +82,37 @@ public class MainActivity extends ActionBarActivity {
 
         // Create and populate the list of Outings
         ListView listView = (ListView) findViewById(R.id.list);
-        ArrayList<Outing> outings = new ArrayList<Outing>();
-        this.adapter = new OutingsAdapter(this, outings);
-        adapter.setNotifyOnChange(true);
-        listView.setAdapter(adapter);
+        mMyOutings = new ArrayList<Outing>();
+        mFriendsOutings = new ArrayList<Outing>();
+        mOldOutings = new ArrayList<Outing>();
+
+        mAdapter = new OutingsAdapter(this, mMyOutings);
+        mAdapter.setNotifyOnChange(true);
+        listView.setAdapter(mAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	@Override
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        		Outing outing = (Outing)adapter.getItem(position);
+        		Outing outing = (Outing)mAdapter.getItem(position);
         		Intent intent = new Intent(MainActivity.this, OutingActivity.class);
         		intent.putExtra(OUTING_ID, outing.id);
         		startActivity(intent);
         		}
         	});
+
+        // Add the action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+        actionBar.addTab(actionBar.newTab()
+        							.setText(R.string.my_outings)
+        							.setTabListener(new TabListener(this, "my_outings")));
+        actionBar.addTab(actionBar.newTab()
+				.setText(R.string.friends_outings)
+				.setTabListener(new TabListener(this, "friends_outings")));
+        actionBar.addTab(actionBar.newTab()
+				.setText(R.string.old_outings)
+				.setTabListener(new TabListener(this, "old_outings")));
 
         // Load Outings from the database
         if (mUserId >= 0) {
@@ -120,7 +145,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -148,6 +173,51 @@ public class MainActivity extends ActionBarActivity {
         	return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    public class TabListener implements ActionBar.TabListener {
+        private final Activity mActivity;
+        private final String mTag;
+
+        /** Constructor used each time a new tab is created.
+          * @param activity  The host Activity, used to instantiate the fragment
+          * @param tag  The identifier tag for the fragment
+          * @param clz  The fragment's Class, used to instantiate the fragment
+          */
+        public TabListener(Activity activity, String tag) {
+        	mActivity = activity;
+            mTag = tag;
+        }
+
+        /* The following are each of the ActionBar.TabListener callbacks */
+		@Override
+		public void onTabReselected(Tab arg0,
+				android.support.v4.app.FragmentTransaction arg1) {
+		}
+
+		@Override
+		public void onTabSelected(Tab arg0,
+				android.support.v4.app.FragmentTransaction arg1) {
+			mAdapter.clear();
+			if (mTag == "my_outings") {
+				for(Outing outing: mMyOutings) {
+	                mAdapter.add(outing);
+	            }
+			} else if (mTag == "friends_outings") {
+				for(Outing outing: mFriendsOutings) {
+	                mAdapter.add(outing);
+	            }
+			} else {
+				for(Outing outing: mOldOutings) {
+					mAdapter.add(outing);
+				}
+			}
+		}
+
+		@Override
+		public void onTabUnselected(Tab arg0,
+				android.support.v4.app.FragmentTransaction arg1) {
+		}
     }
 
     private class LoadFromDbTask extends AsyncTask<Void, Integer, ArrayList<Outing> > {
@@ -177,14 +247,17 @@ public class MainActivity extends ActionBarActivity {
 
 		protected void onPostExecute(ArrayList<Outing> outings) {
     		Log.d(TAG, "Loading from the database: finished");
-    		adapter.clear();
+    		// TODO: put the outings in the right array
+    		mMyOutings = outings;
+
+    		mAdapter.clear();
     		if (outings != null) {
     			// addAll is not available in earlier versions
     			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-    	            adapter.addAll(outings);
+    	            mAdapter.addAll(outings);
     	        } else {
     	            for(Outing outing: outings) {
-    	                adapter.add(outing);
+    	                mAdapter.add(outing);
     	            }
     	        }
     		}
@@ -241,14 +314,17 @@ public class MainActivity extends ActionBarActivity {
     	}
     	protected void onPostExecute(ArrayList<Outing> outings) {
     		Log.d(TAG, "Sync from server: finished");
-    		adapter.clear();
+    		// TODO: put the outings in the right array
+    		mMyOutings = outings;
+
+    		mAdapter.clear();
     		if (outings != null) {
     			// addAll is not available in earlier versions
     			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-    	            adapter.addAll(outings);
+    	            mAdapter.addAll(outings);
     	        } else {
     	            for(Outing outing: outings) {
-    	                adapter.add(outing);
+    	                mAdapter.add(outing);
     	            }
     	        }
     		} else {
