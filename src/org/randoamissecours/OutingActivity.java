@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.DigitalClock;
 import android.widget.TextView;
 
 public class OutingActivity extends ActionBarActivity {
