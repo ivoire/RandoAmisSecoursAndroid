@@ -27,6 +27,10 @@ public class OutingActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_outing);
 
+		// Ad the return caret with the icon to go back to the main screen
+		// The parent screen is defined in the AndroidManifest
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		// Get the outing ID
 		Intent intent = getIntent();
 		mID = intent.getIntExtra(MainActivity.OUTING_ID, 0);

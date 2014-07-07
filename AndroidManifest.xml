@@ -27,7 +27,11 @@
         </activity>
         <activity
             android:name="org.randoamissecours.OutingActivity"
-            android:label="@string/title_activity_outing" >
+            android:label="@string/title_activity_outing"
+            android:parentActivityName="org.randoamissecours.MainActivity" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="org.randoamissecours.MainActivity" />
         </activity>
         <activity
             android:name="org.randoamissecours.LoginActivity"
