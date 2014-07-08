@@ -11,6 +11,7 @@ public class OutingOpenHelper extends SQLiteOpenHelper {
 	
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_USER_ID = "user_id";
 	public static final String COLUMN_DESCRIPTION = "description";
 	public static final String COLUMN_STATUS = "status";
 	public static final String COLUMN_BEGINNING = "beginning";
@@ -23,6 +24,7 @@ public class OutingOpenHelper extends SQLiteOpenHelper {
 			"CREATE TABLE " + TABLE_NAME + " (" +
 		    COLUMN_ID +" INTEGER PRIMARY KEY," +
 			COLUMN_NAME + " TEXT," +
+		    COLUMN_USER_ID + " INTEGER," +
 			COLUMN_DESCRIPTION + " TEXT," +
 			COLUMN_STATUS + " INTEGER," +
 			COLUMN_BEGINNING + " TEXT," +

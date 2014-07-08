@@ -231,15 +231,17 @@ public class MainActivity extends ActionBarActivity {
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             String[] projection = {
             		OutingOpenHelper.COLUMN_ID,
-            		OutingOpenHelper.COLUMN_NAME
+            		OutingOpenHelper.COLUMN_NAME,
+            		OutingOpenHelper.COLUMN_USER_ID
             };
             Cursor c = db.query(OutingOpenHelper.TABLE_NAME, projection, null, null, null, null, null);
             while (c.moveToNext()) {
             	Outing outing = new Outing(c.getString(c.getColumnIndexOrThrow(
             											OutingOpenHelper.COLUMN_NAME)));
             	outing.id = c.getInt(c.getColumnIndexOrThrow(OutingOpenHelper.COLUMN_ID));
+            	outing.user_id = c.getInt(c.getColumnIndexOrThrow(OutingOpenHelper.COLUMN_USER_ID));
             	outings.add(outing);
-            	Log.d(TAG, String.format("   %s", outing.name));
+            	Log.d(TAG, String.format("   %s (%d)", outing.name, outing.user_id));
             }
             db.close();
             return outings;
@@ -296,6 +298,7 @@ public class MainActivity extends ActionBarActivity {
     				ContentValues values = new ContentValues();
     				values.put(OutingOpenHelper.COLUMN_ID, out.id);
     				values.put(OutingOpenHelper.COLUMN_NAME, out.name);
+    				values.put(OutingOpenHelper.COLUMN_USER_ID, out.user_id);
     				values.put(OutingOpenHelper.COLUMN_DESCRIPTION, out.description);
     				values.put(OutingOpenHelper.COLUMN_STATUS, out.status);
     				values.put(OutingOpenHelper.COLUMN_BEGINNING, out.dateFormat(out.beginning));
