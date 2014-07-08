@@ -196,22 +196,7 @@ public class MainActivity extends ActionBarActivity {
 		public void onTabSelected(Tab arg0,
 				android.support.v4.app.FragmentTransaction arg1) {
 			mCurrentTab = mTag;
-
-			// Show it on screen
-    		mAdapter.clear();
-    		if (mCurrentTab == "my_outings") {
-    			for (Outing outing: mMyOutings) {
-    				mAdapter.add(outing);
-    			}
-    		} else if (mCurrentTab == "friends_outings") {
-    			for (Outing outing: mFriendsOutings) {
-    				mAdapter.add(outing);
-    			}
-    		} else {
-    			for (Outing outing: mOldOutings) {
-    				mAdapter.add(outing);
-    			}
-    		}
+			fillAdapter();
 		}
 
 		@Override
@@ -256,7 +241,6 @@ public class MainActivity extends ActionBarActivity {
     		mOldOutings.clear();
 
     		if (outings != null) {
-    			Log.d(TAG, String.format("mUserId=%d", mUserId));
     			for (Outing outing: outings) {
     				// TODO: check the status flag
     				if (outing.user_id == mUserId) {
