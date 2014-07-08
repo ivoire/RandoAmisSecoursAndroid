@@ -295,7 +295,7 @@ public class MainActivity extends ActionBarActivity {
     		String server = sharedPref.getString("server", "");
 
     		Log.d(TAG, String.format("Sync from the server: %s", server));
-    		String Url = String.format("%s/api/1.0/outing/?&api_key=%s&username=%s",
+    		String Url = String.format("%s/api/1.0/outing/?&api_key=%s&username=%s&status__range=1,3",
     								   server, mApiKey, mUsername);
     		JSONObject json = HTTPHelper.downloadJSON(Url);
 
