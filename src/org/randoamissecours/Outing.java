@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 import org.json.JSONException;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 public class Outing {
 	public int id;
 	public String name;
+	public int user_id;
 	public String description;
 	public int status;
 	public Date beginning;
@@ -25,6 +27,7 @@ public class Outing {
 		try {
 			this.id = object.getInt("id");
 			this.name = object.getString("name");
+			this.user_id = this.extractUserID(object.getString("user"));
 			this.description = object.getString("description");
 			this.status = object.getInt("status");
 			this.beginning = parseDate(object.getString("beginning"));
@@ -58,5 +61,21 @@ public class Outing {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return sdf.format(date);
+	}
+
+	public int extractUserID(String str) {
+		Scanner scan = new Scanner(str);
+		scan.useDelimiter("/");
+		int user_id = -1;
+		// We are expecting /api/1.0/user/<ID>/
+		if (scan.next().equals("api")) {
+			if (scan.next().equals("1.0")) {
+				if (scan.next().equals("user")) {
+					user_id = scan.nextInt();
+				}
+			}
+		}
+		scan.close();
+		return user_id;
 	}
 }
